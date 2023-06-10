@@ -6,7 +6,7 @@ export const paintFlags = (array) => {
                                 <img src="${e.flags.png}" alt="">
                                 <div class="infoFlags">
                                     <h4>${e.name.common}</h4>
-                                    <h4>Población: ${e.population}</h4>
+                                    <h4>Población: ${e.population} habitantes</h4>
                                     <h4>Región: ${e.region}</h4>
                                     <h4>Capital: ${e.capital}</h4>
                                 </div>
@@ -18,9 +18,10 @@ export const paintFlags = (array) => {
 const createButons = (array) => {
     const divButtons = document.querySelector('.divButtons');
     array.map(string => {
-        divButtons.innerHTML += `<button><a href="./flags.html?cca3=${string}">${string}</a></button>`
+        divButtons.innerHTML += `<a href="./flags.html?cca3=${string}"><button> ${string}</button></a>`
     });
 }
+
 
 export const paintOneFlags = (array) => {
     const section = document.querySelector('section');
@@ -48,3 +49,27 @@ export const pais = async (url) => {
     const data = await response.json();
     return data;
 }
+
+
+export const paintAgaing = () =>{
+    let stringNombraPais='';
+    buscador.addEventListener('keydown', async (event) =>{
+        stringNombraPais+=event.key
+        let urlBuscar = `https://restcountries.com/v3.1/name/${stringNombraPais}`;
+        if (stringNombraPais.length>1) {
+            const arrayPais= await pais2(urlBuscar);
+            const section = document.querySelector('section');
+            section.innerHTML=''
+            paintFlags(arrayPais)
+        }
+    });
+    
+}
+
+
+export const pais2 = async (url) => {
+    const response = await fetch(url);
+    const data = await response.json();
+    return data;
+}
+
