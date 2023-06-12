@@ -1,7 +1,7 @@
 
 export const paintFlags = (array) => {
     const section = document.querySelector('section');
-    array.forEach(e => {
+    array.forEach((e, i) => {
         section.innerHTML += `<article>
                                 <img src="${e.flags.png}" alt="">
                                 <div class="infoFlags">
@@ -10,10 +10,11 @@ export const paintFlags = (array) => {
                                     <h4>Región: ${e.region}</h4>
                                     <h4>Capital: ${e.capital}</h4>
                                 </div>
-                                <button><a href="./pages/flags.html?cca3=${e.cca3}">More</a></button>
+                                <a href="./pages/flags.html?cca3=${e.cca3}"><button>more</button></a>
                             </article>`
-    });
-}
+                        });
+                    }
+                    
 
 const createButons = (array) => {
     const divButtons = document.querySelector('.divButtons');
@@ -21,7 +22,6 @@ const createButons = (array) => {
         divButtons.innerHTML += `<a href="./flags.html?cca3=${string}"><button> ${string}</button></a>`
     });
 }
-
 
 export const paintOneFlags = (array) => {
     const section = document.querySelector('section');
@@ -50,26 +50,31 @@ export const pais = async (url) => {
     return data;
 }
 
-
-export const paintAgaing = () =>{
-    let stringNombraPais='';
-    buscador.addEventListener('keydown', async (event) =>{
-        stringNombraPais+=event.key
-        let urlBuscar = `https://restcountries.com/v3.1/name/${stringNombraPais}`;
-        if (stringNombraPais.length>1) {
-            const arrayPais= await pais2(urlBuscar);
+export const paintAgaing = () => {
+    let stringNombraPais = '';
+    let buscador = document.querySelector('#buscador');
+    buscador.addEventListener('keydown', async (event) => {
+        var keyCode = event.which || event.keyCode;
+        stringNombraPais += event.key;
+        if ((keyCode >= 65 && keyCode <= 90) || (keyCode >= 97 && keyCode <= 122) || keyCode == 192) {
+            let urlBuscar = `https://restcountries.com/v3.1/name/${stringNombraPais}`;
+            const arrayPais = await pais(urlBuscar);
             const section = document.querySelector('section');
-            section.innerHTML=''
-            paintFlags(arrayPais)
+            const arrayFiltrado = arrayPais.filter(event => {
+                let nombreMinuscula = (event.name.common).toLowerCase();
+                return nombreMinuscula.includes(stringNombraPais);
+            });
+            section.innerHTML = ''
+            paintFlags(arrayFiltrado);
+        }
+        else {
+            let buscador = document.querySelector('#buscador');
+            buscador.value = "";
+            const section = document.querySelector('section');
+            section.innerHTML = ''
+            stringNombraPais = '';
+            const arrayCountries = await pais('https://restcountries.com/v3.1/all');
+            paintFlags(arrayCountries);
         }
     });
-    
 }
-
-
-export const pais2 = async (url) => {
-    const response = await fetch(url);
-    const data = await response.json();
-    return data;
-}
-
